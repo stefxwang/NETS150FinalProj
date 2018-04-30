@@ -1,6 +1,6 @@
-import java.util.Scanner;
-
 package rideScheduler;
+
+import java.util.Scanner;
 
 public class Scheduler {
 	public static int[] firstTimeArr;
