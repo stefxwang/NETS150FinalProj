@@ -10,7 +10,7 @@ public class SchedulerAlgorithm {
 	public int algorithm (int[] inputs) {
 		allPrices = inputs;
 		
-		// Loop through first ln(n) and find the max. This is the benchmark.
+		// Loop through first ln(n) and find the min price. This is the benchmark.
 		for (int i = 0; i < (int) (Math.log(allPrices.length)); i++) {
 			int smallest = 0;
 			if (allPrices[i] < POSITIVE_INFINITY) {
