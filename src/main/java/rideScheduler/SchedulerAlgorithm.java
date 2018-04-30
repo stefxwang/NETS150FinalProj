@@ -1,3 +1,4 @@
+package rideScheduler;
 
 public class SchedulerAlgorithm {
 

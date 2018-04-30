@@ -1,5 +1,7 @@
 import java.util.Scanner;
 
+package rideScheduler;
+
 public class Scheduler {
 	public static int[] firstTimeArr;
 	public static int[] secondTimeArr;
