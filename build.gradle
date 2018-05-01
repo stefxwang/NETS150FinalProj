@@ -7,6 +7,10 @@ repositories {
 
 dependencies {
 	compile 'com.uber.sdk:rides:0.5.2'
+	compile 'com.uber.sdk:uber-core:0.8.0'
+	compile 'com.uber.sdk:uber-core-oauth-client-adapter:0.8.0'
+	compile 'com.googlecode.json-simple:json-simple:1.1.1'
+	compile 'org.jsoup:jsoup:1.11.3'
 }
 
 run {

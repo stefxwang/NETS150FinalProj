@@ -1,10 +1,10 @@
 Project Structure:
 src  
-    main  
-	java  
-	    rideScheduler  
-		Scheduler.java  
-		SchedulerAlgorithm.java  
+--> main  
+------> java  
+----------> rideScheduler  
+--------------> Scheduler.java  
+--------------> SchedulerAlgorithm.java  
 
 How to Run Application:  
 (Execute on command in Terminal at root project directory)  
