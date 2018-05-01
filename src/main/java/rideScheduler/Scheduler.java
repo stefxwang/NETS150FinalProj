@@ -5,7 +5,6 @@ import java.util.Scanner;
 public class Scheduler {
 	public static int[] firstTimeArr;
 	public static int[] secondTimeArr;
-	public static int maxPrice; 
 	
 
 	public static void main(String[] args) {
@@ -19,20 +18,16 @@ public class Scheduler {
 		
 		for (int i = 0; i < numTimes; i++) {
 			//keeping track of the first time so we can call these all easily because we can tell the i
-			System.out.println("input the first time you want to start looking");
+			System.out.println("input the first time you want to start looking\n" + "Format 24 hour time as 1605 for 4:05pm for example");
 			firstTimeArr = new int[numTimes];
 			int firstTime = sc.nextInt();
 			firstTimeArr[i] = firstTime;
 			
 			//keeping track of the end time 
-			System.out.println("input the second time you want to stop looking");
+			System.out.println("input the second time you want to stop looking\n" + "Format 24 hour time as 1605 for 4:05pm for example");
 			secondTimeArr = new int[numTimes];
 			int secondTime = sc.nextInt();
 			secondTimeArr[i] = secondTime;
-			
-			
-			System.out.println("What is the max price drop you are waiting for");
-			maxPrice = sc.nextInt();
 			
 			
 			//keep making calls to the api until the times are up
