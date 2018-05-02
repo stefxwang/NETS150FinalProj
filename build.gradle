@@ -5,16 +5,45 @@ repositories {
 	mavenCentral()
 }
 
+def build = [
+        gradleVersion: '4.3.1',
+        ci: 'true' == System.getenv('CI'),
+
+        repositories: [
+                plugins: 'https://plugins.gradle.org/m2/'
+        ],
+
+        gradlePlugins: [
+                release: 'net.researchgate:gradle-release:2.1.2',
+                github: 'co.riiid:gradle-github-plugin:0.4.2',
+                cobertura: 'net.saliman:gradle-cobertura-plugin:2.3.1',
+                buildConfig: 'gradle.plugin.de.fuerstenau:BuildConfigPlugin:1.1.8'
+        ]
+]
+
 dependencies {
-	compile 'com.uber.sdk:rides:0.5.2'
-	compile 'com.uber.sdk:uber-core:0.8.0'
+	compile group: 'com.uber.sdk', name: 'uber-rides', version: '0.7.0'
 	compile 'com.uber.sdk:uber-core-oauth-client-adapter:0.8.0'
 	compile 'com.googlecode.json-simple:json-simple:1.1.1'
 	compile 'org.jsoup:jsoup:1.11.3'
+	compile 'com.squareup.retrofit2:retrofit:2.4.0'
+	compile 'com.google.code.gson:gson:2.8.4'
+        compile 'com.squareup.retrofit2:converter-moshi:2.0.2'
+        compile 'com.squareup.moshi:moshi:1.2.0'
+        compile 'com.squareup.okhttp3:okhttp:3.2.0'
+        compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
+        compile 'com.google.http-client:google-http-client-jackson2:1.19.0'
+        compile 'com.google.oauth-client:google-oauth-client:1.19.0'
+        compile 'com.google.oauth-client:google-oauth-client-jetty:1.19.0'
+        compile 'com.google.oauth-client:google-oauth-client-servlet:1.19.0'
+        compile 'org.eclipse.jetty:jetty-server:9.2.10.v20150310'
+        compile 'org.eclipse.jetty:jetty-servlet:9.2.10.v20150310'
+
+
 }
 
 run {
 	standardInput = System.in
 }
 
-mainClassName = 'rideScheduler.Scheduler'
+mainClassName = 'rideScheduler.Server'

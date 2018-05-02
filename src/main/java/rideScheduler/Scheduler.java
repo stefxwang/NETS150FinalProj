@@ -10,7 +10,7 @@ public class Scheduler {
 
 	public static void main(String[] args) {
 		//example of how to get coordinates from a well-formatted address
-		System.out.println(Geocode.getCoordinates("1600 Amphitheatre Pkwy, Mountain View, CA").toString());
+		System.out.println(Geocode.getCoordinates("1401 John F Kennedy Blvd, Philadelphia, PA").toString());
 		Scanner sc = new Scanner(System.in);
 		
 		System.out.println("How many times do you need to call an Uber/Lyft today");
