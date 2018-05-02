@@ -5,7 +5,7 @@ src
 ----------> rideScheduler  
 --------------> Scheduler.java  
 --------------> SchedulerAlgorithm.java  
-------> resources
+------> resources  
 ----------> secrets.properties
 
 How to Run Application:  

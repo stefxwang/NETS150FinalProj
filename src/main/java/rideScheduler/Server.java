@@ -26,6 +26,7 @@ import com.google.api.client.util.store.MemoryDataStoreFactory;
 import com.uber.sdk.core.auth.OAuth2Credentials;
 import com.uber.sdk.core.auth.Scope;
 import com.uber.sdk.core.client.SessionConfiguration;
+import com.uber.sdk.core.client.SessionConfiguration.Environment;
 
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
@@ -60,7 +61,7 @@ public class Server {
         handler.setContextPath("/");
         server.setHandler(handler);
 
-        handler.addServlet(SampleServlet.class, "/");
+        handler.addServlet(UberServlet.class, "/");
         handler.addServlet(OAuth2CallbackServlet.class, CALLBACK_URL);
 
         server.start();
@@ -98,6 +99,7 @@ public class Server {
         return new SessionConfiguration.Builder()
                 .setClientId(clientId)
                 .setClientSecret(clientSecret)
+		.setEnvironment(Environment.SANDBOX)
                 .setRedirectUri(REDIRECT_URI)
                 .setScopes(Collections.singletonList(Scope.PROFILE))
                 .build();

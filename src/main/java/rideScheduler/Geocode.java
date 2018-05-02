@@ -34,6 +34,8 @@ public class Geocode {
     try {
       doc = getDOMFromURL(baseURL + "?address=" + formattedAddr + "&key=" + key);
       loc = doc.selectFirst("location");
+      System.out.println(loc.selectFirst("lat").text());
+      System.out.println(loc.selectFirst("lng").text());
       return new Point2D.Float(Float.parseFloat(loc.selectFirst("lat").text()), Float.parseFloat(loc.selectFirst("lng").text()));
     } catch (IOException e) {
       System.out.println("Could not get page.");
