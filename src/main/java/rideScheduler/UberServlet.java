@@ -57,7 +57,8 @@ public class UberServlet extends HttpServlet {
     private OAuth2Credentials oAuth2Credentials;
     private Credential credential;
     private RidesService uberRidesService;
-    private static final int MAX_WAIT_TIME = 10;
+    private static final int MAX_WAIT_TIME = 10000; //in milliseconds
+    private static final int SLEEP_TIME = 3000; //in milliseconds
 
     /**
      * Clear the in memory credential and Uber API service once a call has ended.
@@ -105,13 +106,16 @@ public class UberServlet extends HttpServlet {
         }
     }
 
-    protected Response<Ride> runAlgorithm(int n, float startLat, float startLong, float endLat, float endLong) throws IOException {
+    
+    protected Response<Ride> runAlgorithm(int n, float startLat, float startLong, float endLat, float endLong) throws IOException, InterruptedException {
 	double minPrice = Double.MAX_VALUE;
-	double currPrice = -1;	
-	RideRequestParameters rideRequestParameters = new RideRequestParameters.Builder().setPickupCoordinates(startLat, startLong)
+	double currPrice = -1;
+	RideRequestParameters rideRequestParameters = new RideRequestParameters.Builder()
+	    .setPickupCoordinates(startLat, startLong)
 	    .setDropoffCoordinates(endLat, endLong)
 	    .build();
 	Response<Ride> ride = null;
+	String fareId = "";
 
 	System.out.println("--Algorithm running-----");
 
@@ -123,20 +127,65 @@ public class UberServlet extends HttpServlet {
 	    if (currPrice < minPrice) {
 		minPrice = currPrice;
 	    }
+	    System.out.println("Sleeping for 3 seconds before getting price again");
+	    Thread.sleep(SLEEP_TIME);
 	}
 
-	for (int i = 0; i < MAX_WAIT_TIME; i++) {
+	for (int i = 0; i < MAX_WAIT_TIME; i+= SLEEP_TIME) {
 	    System.out.println("----Finding best price..." + i);
 	    Response<RideEstimate> response = uberRidesService.estimateRide(rideRequestParameters).execute();
 	    currPrice = response.body().getFare().getValue().doubleValue();
 	    System.out.println(currPrice);
 	    if (currPrice < minPrice) {
+		fareId = response.body().getFare().getFareId();
+		System.out.println(fareId);
+		rideRequestParameters = new RideRequestParameters.Builder()
+	    	    .setPickupCoordinates(startLat, startLong)
+	    	    .setDropoffCoordinates(endLat, endLong)
+		    .setFareId(fareId)
+	    	    .build();
 		ride = uberRidesService.requestRide(rideRequestParameters).execute();
+		//System.out.println("-----Testing...." + ride.body().getRideId());
+		if (ride == null) {
+	    	    System.out.println("There was trouble requesting a ride.");
+		} else {
+	    	    System.out.println("Ride request successful.");
+		}
+		System.out.println("-----Printing ride body:");
+		//System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(ride));
+	 	System.out.println("Getting ride ID");
+		//This will result in a NullPointerException due to Internal Server Errors from the Uber Rides API.
+		//We're not sure how to resolve this but this was intended to request a ride for the user.
+		System.out.println(ride.body().getRideId());
 		return ride;
 	    }
+	    System.out.println("Sleeping for 3 seconds before getting price again");
+	    Thread.sleep(SLEEP_TIME);
 	}
 	System.out.println("----max wait time reached, requesting ride now");
+	Response<RideEstimate> response = uberRidesService.estimateRide(rideRequestParameters).execute();
+	fareId = response.body().getFare().getFareId();
+	System.out.println(fareId);
+	rideRequestParameters = new RideRequestParameters.Builder()
+	    .setPickupCoordinates(startLat, startLong)
+	    .setDropoffCoordinates(endLat, endLong)
+	    .setFareId(fareId)
+	    .build();
+	//rideRequestParameters = rideRequestBuilder.setFareId(fareId).build();
 	ride = uberRidesService.requestRide(rideRequestParameters).execute();
+	if (ride == null) {
+	    System.out.println("There was trouble requesting a ride.");
+	} else {
+	    System.out.println("Ride request successful.");
+	}
+	System.out.println("Printing ride body-----");
+	System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(ride));
+	System.out.println("-----Testing...." + ride.body().getRideId());
+	System.out.println("Getting ride ID");
+	//This will result in a NullPointerException due to Internal Server Errors from the Uber Rides API.
+	//We're not sure how to resolve this but this was intended to request a ride for the user.
+	System.out.println(ride.body().getRideId());
+	System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(ride));
 	return ride;
     }
 
@@ -145,47 +194,36 @@ public class UberServlet extends HttpServlet {
         // Fetch the user's profile.
         UserProfile userProfile = uberRidesService.getUserProfile().execute().body();
 	Response<Ride> ride = null;
-	StringBuilder sb = new StringBuilder();
-
 /*
+	//This is for testing purposes.
 	Point2D.Float p1 = Geocode.getCoordinates("1401 John F Kennedy Blvd, Philadelphia, PA");
 	Point2D.Float p2 = Geocode.getCoordinates("101 S 39th St, Philadelphia, PA");
 	System.out.println("------------Finished getting coordinates------------");
-	ride = runAlgorithm(100, (float) p1.getX(), (float) p1.getY(), (float) p2.getX(), (float) p2.getY());
-	System.out.println(ride.body().getRideId());
-
-	if (ride == null) {
-	    System.out.println("There was trouble requesting a ride");
-	} else {
-	    System.out.println("Ride succesfully requested.");
+	try {
+		ride = runAlgorithm(100, (float) p1.getX(), (float) p1.getY(), (float) p2.getX(), (float) p2.getY());
+		System.out.println(ride.body().getRideId());
+	} catch (InterruptedException e) {
+		e.printStackTrace();
 	}
 */
 
-	//TODO: make calls to Schedule here to get user input
 	Scheduler scheduler = new Scheduler();
 	List<Point2D.Float> locations = scheduler.getUserInput();
 
 	for (int i = 0; i < locations.size() - 1; i+=2) {
 		Point2D.Float orig = locations.get(i);
 		Point2D.Float dest = locations.get(i + 1);
-		ride = runAlgorithm(locations.size(), (float) orig.getX(), (float) orig.getY(), (float) dest.getX(), (float) dest.getY());
-		sb.append(ride.body().getRideId() + "\n");
-		System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(ride));
+		try {
+			ride = runAlgorithm(locations.size(), (float) orig.getX(), (float) orig.getY(), (float) dest.getX(), (float) dest.getY());
+			//sb.append(ride.body().getRideId() + "\n");
+			System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(ride));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
-
-/*
-	List<PriceEstimate> prices = uberRidesService.getPriceEstimates(39.95463f, -75.19963f, 39.954098f, -75.16448f).execute().body().getPrices();
-	//System.out.println(Arrays.toString(prices.toArray()));
-	System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(uberRidesService.getPriceEstimates(39.95463f, -75.19963f, 39.954098f, -75.16448f).execute()));
-	for (PriceEstimate price : prices) {
-		System.out.println(price.getEstimate());
-	}
-*/
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
-        //response.getWriter().printf("Logged in as %s%n", userProfile.getEmail());
-        //response.getWriter().println(sb.toString());
-	response.getWriter().println(ride.body().getRideId());
+        response.getWriter().printf("Logged in as %s%n", userProfile.getEmail());
     }
 }

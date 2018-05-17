@@ -38,7 +38,7 @@ public class Geocode {
       System.out.println(loc.selectFirst("lng").text());
       return new Point2D.Float(Float.parseFloat(loc.selectFirst("lat").text()), Float.parseFloat(loc.selectFirst("lng").text()));
     } catch (IOException e) {
-      System.out.println("Could not get page.");
+      System.out.println("Could not get page for addr input: " + addr);
     }
     return new Point2D.Float(-1,-1);
   }

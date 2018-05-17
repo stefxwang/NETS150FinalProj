@@ -33,15 +33,21 @@ public class Scheduler {
 			int firstTime = sc.nextInt();
 			firstTimeArr[i] = firstTime;
 			
+			sc.nextLine();
+
 			//keeping track of the end time 
 			System.out.println("input the second time you want to stop looking\n" + "Format 24 hour time as 1605 for 4:05pm for example");
 			secondTimeArr = new int[numTimes];
 			int secondTime = sc.nextInt();
 			secondTimeArr[i] = secondTime;
 			
+			sc.nextLine();
+
 			//All address inputs must be well-formatted
 			System.out.println("Input your origin address: ");
 			origin = sc.nextLine();
+		
+			//sc.nextLine();
 			
 			System.out.println("Input your destination address: ");
 			destination = sc.nextLine();			
